@@ -1,5 +1,14 @@
 <div class="task-list">
-   <h2>Mes tâches</h2>
+   <div class="header">
+      <h2>Mes tâches</h2>
+      <button (click)="toggleForm()">
+         {{ showForm() ? 'Annuler' : '+ Nouvelle tâche' }}
+      </button>
+   </div>
+
+   @if (showForm()) {
+   <app-task-form (taskCreated)="onTaskCreated($event)" />
+   }
 
    @if (tasks().length === 0) {
    <p>Aucune tâche pour le moment.</p>

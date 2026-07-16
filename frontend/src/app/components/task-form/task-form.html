@@ -1,0 +1,33 @@
+<p>task-form works!</p>
+<form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+
+   <div class="form-field">
+      <label for="title">Titre *</label>
+      <input id="title" type="text" formControlName="title" placeholder="Titre de la tâche" />
+      @if (taskForm.get('title')?.invalid && taskForm.get('title')?.touched) {
+      <span class="error">
+         @if (taskForm.get('title')?.hasError('required')) {
+         Le titre est obligatoire.
+         }
+         @if (taskForm.get('title')?.hasError('maxlength')) {
+         Le titre ne peut pas dépasser 100 caractères.
+         }
+      </span>
+      }
+   </div>
+
+   <div class="form-field">
+      <label for="description">Description</label>
+      <textarea id="description" formControlName="description" placeholder="Description (optionnelle)"></textarea>
+   </div>
+
+   <div class="form-field">
+      <label for="dueDate">Date d'échéance</label>
+      <input id="dueDate" type="datetime-local" formControlName="dueDate" />
+   </div>
+
+   <button type="submit" [disabled]="taskForm.invalid">
+      Créer la tâche
+   </button>
+
+</form>
