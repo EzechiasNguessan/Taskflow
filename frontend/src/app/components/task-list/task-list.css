@@ -1,0 +1,26 @@
+.task-list {
+   max-width: 600px;
+   margin: 2rem auto;
+   font-family: sans-serif;
+}
+
+ul {
+   list-style: none;
+   padding: 0;
+}
+
+li {
+   border: 1px solid #ddd;
+   border-radius: 8px;
+   padding: 1rem;
+   margin-bottom: 0.75rem;
+}
+
+.status {
+   display: inline-block;
+   margin-left: 0.5rem;
+   padding: 0.2rem 0.6rem;
+   border-radius: 12px;
+   background-color: #e0e0e0;
+   font-size: 0.8rem;
+}

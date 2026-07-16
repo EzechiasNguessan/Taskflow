@@ -1,0 +1,19 @@
+<div class="task-list">
+   <h2>Mes tâches</h2>
+
+   @if (tasks().length === 0) {
+   <p>Aucune tâche pour le moment.</p>
+   } @else {
+   <ul>
+      @for (task of tasks(); track task.id) {
+      <li>
+         <strong>{{ task.title }}</strong>
+         <span class="status">{{ task.status }}</span>
+         @if (task.description) {
+         <p>{{ task.description }}</p>
+         }
+      </li>
+      }
+   </ul>
+   }
+</div>
