@@ -1,13 +1,14 @@
 <div class="task-list">
    <div class="header">
       <h2>Mes tâches</h2>
-      <button (click)="toggleForm()">
+      <button (click)="showForm() ? closeForm() : openCreateForm()">
          {{ showForm() ? 'Annuler' : '+ Nouvelle tâche' }}
       </button>
    </div>
 
    @if (showForm()) {
-   <app-task-form (taskCreated)="onTaskCreated($event)" />
+   <app-task-form [taskToEdit]="taskBeingEdited()" (taskCreated)="onTaskCreated($event)"
+      (taskUpdated)="onTaskUpdated($event)" />
    }
 
    @if (tasks().length === 0) {
@@ -16,11 +17,17 @@
    <ul>
       @for (task of tasks(); track task.id) {
       <li>
-         <strong>{{ task.title }}</strong>
-         <span class="status">{{ task.status }}</span>
-         @if (task.description) {
-         <p>{{ task.description }}</p>
-         }
+         <div class="task-content">
+            <strong>{{ task.title }}</strong>
+            <span class="status">{{ task.status }}</span>
+            @if (task.description) {
+            <p>{{ task.description }}</p>
+            }
+         </div>
+         <div class="task-actions">
+            <button (click)="openEditForm(task)">Modifier</button>
+            <button (click)="deleteTask(task.id)" class="delete-btn">Supprimer</button>
+         </div>
       </li>
       }
    </ul>

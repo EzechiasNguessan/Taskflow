@@ -13,6 +13,7 @@ export class TaskList implements OnInit {
 
   protected readonly tasks = signal<Task[]>([]);
   protected readonly showForm = signal(false);
+  protected readonly taskBeingEdited = signal<Task | null>(null);
 
   constructor(private taskService: TaskService) { }
 
@@ -22,21 +23,48 @@ export class TaskList implements OnInit {
 
   loadTasks(): void {
     this.taskService.getAllTasks().subscribe({
-      next: (data) => {
-        this.tasks.set(data);
-      },
-      error: (err) => {
-        console.error('Erreur lors du chargement des tâches', err);
-      }
+      next: (data) => this.tasks.set(data),
+      error: (err) => console.error('Erreur lors du chargement des tâches', err)
     });
   }
 
-  toggleForm(): void {
-    this.showForm.update(value => !value);
+  openCreateForm(): void {
+    this.taskBeingEdited.set(null);
+    this.showForm.set(true);
+  }
+
+  openEditForm(task: Task): void {
+    this.taskBeingEdited.set(task);
+    this.showForm.set(true);
+  }
+
+  closeForm(): void {
+    this.showForm.set(false);
+    this.taskBeingEdited.set(null);
   }
 
   onTaskCreated(newTask: Task): void {
-    this.tasks.update(currentTasks => [...currentTasks, newTask]);
-    this.showForm.set(false);
+    this.tasks.update(current => [...current, newTask]);
+    this.closeForm();
+  }
+
+  onTaskUpdated(updatedTask: Task): void {
+    this.tasks.update(current =>
+      current.map(t => t.id === updatedTask.id ? updatedTask : t)
+    );
+    this.closeForm();
+  }
+
+  deleteTask(id: number): void {
+    if (!confirm('Es-tu sûr de vouloir supprimer cette tâche ?')) {
+      return;
+    }
+
+    this.taskService.deleteTask(id).subscribe({
+      next: () => {
+        this.tasks.update(current => current.filter(t => t.id !== id));
+      },
+      error: (err) => console.error('Erreur lors de la suppression', err)
+    });
   }
 }

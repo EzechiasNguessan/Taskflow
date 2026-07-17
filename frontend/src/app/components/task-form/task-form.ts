@@ -1,4 +1,4 @@
-import { Component, output } from '@angular/core';
+import { Component, input, output, effect } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
@@ -11,7 +11,9 @@ import { Task } from '../../models/task.model';
 })
 export class TaskForm {
 
+  readonly taskToEdit = input<Task | null>(null);
   readonly taskCreated = output<Task>();
+  readonly taskUpdated = output<Task>();
 
   taskForm = new FormGroup({
     title: new FormControl('', [Validators.required, Validators.maxLength(100)]),
@@ -19,7 +21,20 @@ export class TaskForm {
     dueDate: new FormControl('')
   });
 
-  constructor(private taskService: TaskService) { }
+  constructor(private taskService: TaskService) {
+    effect(() => {
+      const task = this.taskToEdit();
+      if (task) {
+        this.taskForm.patchValue({
+          title: task.title,
+          description: task.description ?? '',
+          dueDate: task.dueDate ?? ''
+        });
+      } else {
+        this.taskForm.reset();
+      }
+    });
+  }
 
   onSubmit(): void {
     if (this.taskForm.invalid) {
@@ -27,19 +42,30 @@ export class TaskForm {
     }
 
     const formValue = this.taskForm.value;
+    const currentTask = this.taskToEdit();
 
-    this.taskService.createTask({
+    const payload = {
       title: formValue.title!,
       description: formValue.description || undefined,
       dueDate: formValue.dueDate || undefined
-    }).subscribe({
-      next: (createdTask) => {
-        this.taskCreated.emit(createdTask);
-        this.taskForm.reset();
-      },
-      error: (err) => {
-        console.error('Erreur lors de la création de la tâche', err);
-      }
-    });
+    };
+
+    if (currentTask) {
+      this.taskService.updateTask(currentTask.id, payload).subscribe({
+        next: (updatedTask) => {
+          this.taskUpdated.emit(updatedTask);
+          this.taskForm.reset();
+        },
+        error: (err) => console.error('Erreur lors de la modification', err)
+      });
+    } else {
+      this.taskService.createTask(payload).subscribe({
+        next: (createdTask) => {
+          this.taskCreated.emit(createdTask);
+          this.taskForm.reset();
+        },
+        error: (err) => console.error('Erreur lors de la création', err)
+      });
+    }
   }
 }
