@@ -1,0 +1,56 @@
+<div class="project-list">
+   <div class="header">
+      <h2>Mes projets</h2>
+      <button (click)="toggleForm()">
+         {{ showForm() ? 'Annuler' : '+ Nouveau projet' }}
+      </button>
+   </div>
+
+   @if (showForm()) {
+   <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+         <label for="name">Nom du projet *</label>
+         <input id="name" type="text" formControlName="name" placeholder="Nom du projet" />
+         @if (projectForm.get('name')?.invalid && projectForm.get('name')?.touched) {
+         <span class="error">
+            @if (projectForm.get('name')?.hasError('required')) {
+            Le nom est obligatoire.
+            }
+            @if (projectForm.get('name')?.hasError('maxlength')) {
+            Le nom ne peut pas dépasser 100 caractères.
+            }
+         </span>
+         }
+      </div>
+
+      <div class="form-field">
+         <label for="description">Description</label>
+         <textarea id="description" formControlName="description" placeholder="Description (optionnelle)"></textarea>
+      </div>
+
+      <button type="submit" [disabled]="projectForm.invalid">
+         Créer le projet
+      </button>
+   </form>
+   }
+
+   @if (projects().length === 0) {
+   <p>Aucun projet pour le moment.</p>
+   } @else {
+   <ul>
+      @for (project of projects(); track project.id) {
+      <li>
+         <div class="project-content" (click)="openTasks(project.id)">
+            <strong>{{ project.name }}</strong>
+            @if (project.description) {
+            <p>{{ project.description }}</p>
+            }
+         </div>
+         <div class="project-actions">
+            <button (click)="deleteProject(project.id)" class="delete-btn">Supprimer</button>
+         </div>
+      </li>
+      }
+   </ul>
+   }
+</div>

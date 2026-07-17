@@ -12,6 +12,7 @@ import { Task } from '../../models/task.model';
 export class TaskForm {
 
   readonly taskToEdit = input<Task | null>(null);
+  readonly projectId = input.required<number>();
   readonly taskCreated = output<Task>();
   readonly taskUpdated = output<Task>();
 
@@ -44,14 +45,14 @@ export class TaskForm {
     const formValue = this.taskForm.value;
     const currentTask = this.taskToEdit();
 
-    const payload = {
-      title: formValue.title!,
-      description: formValue.description || undefined,
-      dueDate: formValue.dueDate || undefined
-    };
-
     if (currentTask) {
-      this.taskService.updateTask(currentTask.id, payload).subscribe({
+      this.taskService.updateTask(currentTask.id, {
+        title: formValue.title!,
+        description: formValue.description || undefined,
+        dueDate: formValue.dueDate || undefined,
+        status: currentTask.status,
+        projectId: this.projectId()
+      }).subscribe({
         next: (updatedTask) => {
           this.taskUpdated.emit(updatedTask);
           this.taskForm.reset();
@@ -59,7 +60,12 @@ export class TaskForm {
         error: (err) => console.error('Erreur lors de la modification', err)
       });
     } else {
-      this.taskService.createTask(payload).subscribe({
+      this.taskService.createTask({
+        title: formValue.title!,
+        description: formValue.description || undefined,
+        dueDate: formValue.dueDate || undefined,
+        projectId: this.projectId()
+      }).subscribe({
         next: (createdTask) => {
           this.taskCreated.emit(createdTask);
           this.taskForm.reset();

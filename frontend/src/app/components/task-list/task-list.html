@@ -1,5 +1,6 @@
 <div class="task-list">
    <div class="header">
+      <button (click)="goBackToProjects()" class="back-btn">← Projets</button>
       <h2>Mes tâches</h2>
       <button (click)="showForm() ? closeForm() : openCreateForm()">
          {{ showForm() ? 'Annuler' : '+ Nouvelle tâche' }}
@@ -7,7 +8,7 @@
    </div>
 
    @if (showForm()) {
-   <app-task-form [taskToEdit]="taskBeingEdited()" (taskCreated)="onTaskCreated($event)"
+   <app-task-form [taskToEdit]="taskBeingEdited()" [projectId]="projectId" (taskCreated)="onTaskCreated($event)"
       (taskUpdated)="onTaskUpdated($event)" />
    }
 

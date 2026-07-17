@@ -6,6 +6,10 @@ export interface Task {
   description: string | null;
   status: TaskStatus;
   dueDate: string | null;
+  project: {
+    id: number;
+    name: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -13,6 +17,14 @@ export interface Task {
 export interface CreateTaskRequest {
   title: string;
   description?: string;
-  status?: TaskStatus;
   dueDate?: string;
+  projectId: number;
+}
+
+export interface UpdateTaskRequest {
+  title: string;
+  description?: string;
+  dueDate?: string;
+  status: TaskStatus;
+  projectId: number;
 }
