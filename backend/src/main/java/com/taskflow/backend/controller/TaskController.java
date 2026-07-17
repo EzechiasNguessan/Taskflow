@@ -1,5 +1,7 @@
 package com.taskflow.backend.controller;
 
+import com.taskflow.backend.dto.CreateTaskRequest;
+import com.taskflow.backend.dto.UpdateTaskRequest;
 import com.taskflow.backend.entity.Task;
 import com.taskflow.backend.entity.TaskHistory;
 import com.taskflow.backend.service.TaskService;
@@ -21,8 +23,8 @@ public class TaskController {
 
    @PostMapping
    @ResponseStatus(HttpStatus.CREATED)
-   public Task createTask(@Valid @RequestBody Task task) {
-      return taskService.createTask(task);
+   public Task createTask(@Valid @RequestBody CreateTaskRequest request) {
+      return taskService.createTask(request);
    }
 
    @GetMapping
@@ -36,8 +38,8 @@ public class TaskController {
    }
 
    @PutMapping("/{id}")
-   public Task updateTask(@PathVariable Long id, @Valid @RequestBody Task task) {
-      return taskService.updateTask(id, task);
+   public Task updateTask(@PathVariable Long id, @Valid @RequestBody UpdateTaskRequest request) {
+      return taskService.updateTask(id, request);
    }
 
    @DeleteMapping("/{id}")

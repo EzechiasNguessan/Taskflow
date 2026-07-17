@@ -11,38 +11,38 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "projects")
 @EntityListeners(AuditingEntityListener.class)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Task {
+public class Project {
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
 
-   @NotBlank(message = "Le titre est obligatoire")
-   @Size(max = 100, message = "Le titre ne peut pas dépasser 100 caractères")
+   @NotBlank(message = "Le nom du projet est obligatoire")
+   @Size(max = 100, message = "Le nom ne peut pas dépasser 100 caractères")
    @Column(nullable = false, length = 100)
-   private String title;
+   private String name;
 
    @Column(columnDefinition = "TEXT")
    private String description;
 
-   @Enumerated(EnumType.STRING)
-   @Column(nullable = false)
-   private TaskStatus status = TaskStatus.TODO;
-
-   private LocalDateTime dueDate;
-
-   @ManyToOne(fetch = FetchType.LAZY)
-   @JoinColumn(name = "project_id", nullable = false)
-   private Project project;
+   @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+   @JsonIgnore
+   private List<Task> tasks = new ArrayList<>();
 
    @CreatedDate
    @Column(updatable = false)
