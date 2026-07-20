@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskService } from '../../services/task.service';
+import { ProjectService } from '../../services/project.service';
 import { Task } from '../../models/task.model';
 import { TaskForm } from '../task-form/task-form';
 
@@ -15,17 +16,27 @@ export class TaskList implements OnInit {
   protected readonly tasks = signal<Task[]>([]);
   protected readonly showForm = signal(false);
   protected readonly taskBeingEdited = signal<Task | null>(null);
+  protected readonly projectName = signal('');
   protected projectId!: number;
 
   constructor(
     private taskService: TaskService,
+    private projectService: ProjectService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
 
   ngOnInit(): void {
     this.projectId = Number(this.route.snapshot.paramMap.get('id'));
+    this.loadProjectName();
     this.loadTasks();
+  }
+
+  loadProjectName(): void {
+    this.projectService.getProjectById(this.projectId).subscribe({
+      next: (project) => this.projectName.set(project.name),
+      error: (err) => console.error('Erreur lors du chargement du projet', err)
+    });
   }
 
   loadTasks(): void {
